@@ -1,0 +1,26 @@
+{
+  "name": "moon",
+  "version": "1.0.0",
+  "description": "CookiePang NFT Application",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nexters/MOON.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.2",
+    "truffle-hdwallet-provider-klaytn": "^1.0.13-a"
+  },
+  "bugs": {
+    "url": "https://github.com/Nexters/MOON/issues"
+  },
+  "homepage": "https://github.com/Nexters/MOON#readme"
+}
