@@ -1,7 +1,7 @@
 pragma solidity >=0.5.0;
 
-import "./KIP17.sol";
-import "../../access/roles/MinterRole.sol";
+import "contracts/token/KIP17/KIP17.sol";
+import "contracts/access/roles/MinterRole.sol";
 
 /**
  * @title KIP17Mintable

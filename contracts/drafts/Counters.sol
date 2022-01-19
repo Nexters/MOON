@@ -1,6 +1,6 @@
 pragma solidity >=0.5.0;
 
-import "../math/SafeMath.sol";
+import "contracts/math/SafeMath.sol";
 
 /**
  * @title Counters

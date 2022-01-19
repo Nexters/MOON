@@ -1,8 +1,8 @@
 pragma solidity >=0.5.0;
 
-import "./KIP17Metadata.sol";
-import "../../access/roles/MinterRole.sol";
-import "../../introspection/KIP13.sol";
+import "contracts/token/KIP17/KIP17Metadata.sol";
+import "contracts/access/roles/MinterRole.sol";
+import "contracts/introspection/KIP13.sol";
 
 
 /**

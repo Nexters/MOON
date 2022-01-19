@@ -1,8 +1,8 @@
 pragma solidity >=0.5.0;
 
-import "./IKIP17Enumerable.sol";
-import "./KIP17.sol";
-import "../../introspection/KIP13.sol";
+import "contracts/token/KIP17/IKIP17Enumerable.sol";
+import "contracts/token/KIP17/KIP17.sol";
+import "contracts/introspection/KIP13.sol";
 
 /**
  * @title KIP-17 Non-Fungible Token with optional enumeration extension logic

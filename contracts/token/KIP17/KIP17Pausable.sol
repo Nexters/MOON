@@ -1,8 +1,8 @@
 pragma solidity >=0.5.0;
 
-import "./KIP17.sol";
-import "../../lifecycle/Pausable.sol";
-import "../../introspection/KIP13.sol";
+import "contracts/token/KIP17/KIP17.sol";
+import "contracts/lifecycle/Pausable.sol";
+import "contracts/introspection/KIP13.sol";
 
 /**
  * @title KIP17 Non-Fungible Pausable token

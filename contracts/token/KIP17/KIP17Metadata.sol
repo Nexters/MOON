@@ -1,8 +1,8 @@
 pragma solidity >=0.5.0;
 
-import "./KIP17.sol";
-import "./IKIP17Metadata.sol";
-import "../../introspection/KIP13.sol";
+import "contracts/token/KIP17/KIP17.sol";
+import "contracts/token/KIP17/IKIP17Metadata.sol";
+import "contracts/introspection/KIP13.sol";
 
 contract KIP17Metadata is KIP13, KIP17, IKIP17Metadata {
     // Token name

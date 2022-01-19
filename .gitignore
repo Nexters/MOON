@@ -3,11 +3,12 @@ node_modules
 
 # build result ignore
 build
-deployedABI
-deployedAddress
 
 # private key information ignore
 key.js
 
 # idea
 .idea
+
+# metadata
+metadata
