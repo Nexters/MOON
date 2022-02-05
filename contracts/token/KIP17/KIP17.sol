@@ -1,12 +1,12 @@
-pragma solidity >=0.5.0;
+pragma solidity ^0.5.0;
 
-import "contracts/token/KIP17/IKIP17.sol";
-import "contracts/token/KIP17/IERC721Receiver.sol";
-import "contracts/token/KIP17/IKIP17Receiver.sol";
-import "contracts/math/SafeMath.sol";
-import "contracts/utils/Address.sol";
-import "contracts/drafts/Counters.sol";
-import "contracts/introspection/KIP13.sol";
+import "./IKIP17.sol";
+import "./IERC721Receiver.sol";
+import "./IKIP17Receiver.sol";
+import "../../math/SafeMath.sol";
+import "../../utils/Address.sol";
+import "../../drafts/Counters.sol";
+import "../../introspection/KIP13.sol";
 
 /**
  * @title KIP17 Non-Fungible Token Standard basic implementation

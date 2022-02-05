@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
-import "contracts/token/KIP7/KIP7.sol";
-import "contracts/introspection/KIP13.sol";
+import "./KIP7.sol";
+import "../../introspection/KIP13.sol";
 
 /**
  * @dev Extension of `KIP7` that allows token holders to destroy both their own

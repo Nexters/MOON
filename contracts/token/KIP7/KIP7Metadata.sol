@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
-import "contracts/token/KIP7/IKIP7.sol";
-import "contracts/introspection/KIP13.sol";
+import "./IKIP7.sol";
+import "../../introspection/KIP13.sol";
 
 /**
  * @dev Optional functions from the KIP7 standard.

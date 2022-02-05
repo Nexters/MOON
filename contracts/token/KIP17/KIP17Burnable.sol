@@ -1,7 +1,7 @@
-pragma solidity >=0.5.0;
+pragma solidity ^0.5.0;
 
-import "contracts/token/KIP17/KIP17.sol";
-import "contracts/introspection/KIP13.sol";
+import "./KIP17.sol";
+import "../../introspection/KIP13.sol";
 
 /**
  * @title KIP17 Burnable Token

@@ -1,4 +1,4 @@
-pragma solidity >=0.5.0;
+pragma solidity ^0.5.0;
 
 /**
  * @dev Library used to query support of an interface declared via `IKIP13`.

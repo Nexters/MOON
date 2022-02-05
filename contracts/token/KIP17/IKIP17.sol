@@ -1,6 +1,6 @@
-pragma solidity >=0.5.0;
+pragma solidity ^0.5.0;
 
-import "contracts/introspection/IKIP13.sol";
+import "../../introspection/IKIP13.sol";
 
 /**
  * @dev Required interface of an KIP17 compliant contract.

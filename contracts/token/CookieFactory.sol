@@ -1,11 +1,11 @@
-pragma solidity ^0.5.6;
+pragma solidity ^0.5.0;
 
-import "contracts/token/KIP17/KIP17Full.sol";
-import "contracts/token/KIP17/KIP17Mintable.sol";
-import "contracts/token/KIP17/KIP17Burnable.sol";
-import "contracts/token/KIP17/KIP17Pausable.sol";
-import "contracts/ownership/Ownable.sol";
-import {KIP7Spendable} from "contracts/token/HammerCoin.sol";
+import "./KIP17/KIP17Full.sol";
+import "./KIP17/KIP17Mintable.sol";
+import "./KIP17/KIP17Burnable.sol";
+import "./KIP17/KIP17Pausable.sol";
+import "../ownership/Ownable.sol";
+import {KIP7Spendable} from "./HammerCoin.sol";
 
 contract CookieFactory is KIP17Full("Fortune Cookie", "FC"), KIP17Mintable, KIP17Burnable, KIP17Pausable, Ownable {
 

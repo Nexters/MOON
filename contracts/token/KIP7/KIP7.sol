@@ -1,10 +1,10 @@
 pragma solidity ^0.5.0;
 
-import "contracts/token/KIP7/IKIP7.sol";
-import "contracts/math/SafeMath.sol";
-import "contracts/introspection/KIP13.sol";
-import "contracts/utils/Address.sol";
-import "contracts/token/KIP7/IKIP7Receiver.sol";
+import "./IKIP7.sol";
+import "../../math/SafeMath.sol";
+import "../../introspection/KIP13.sol";
+import "../../utils/Address.sol";
+import "./IKIP7Receiver.sol";
 
 /**
  * @dev Implementation of the `IKIP7` interface.

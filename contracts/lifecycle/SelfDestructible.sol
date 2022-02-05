@@ -1,6 +1,6 @@
-pragma solidity >=0.5.0;
+pragma solidity ^0.5.0;
 
-import "contracts/ownership/Ownable.sol";
+import "../ownership/Ownable.sol";
 
 contract SelfDestructible is Ownable {
     function destroy() public onlyOwner  {
