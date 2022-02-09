@@ -9,14 +9,15 @@ import {KIP7Token} from "./HammerCoin.sol";
 
 contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
 
+    using SafeMath for uint256;
+
     // Data & Type
-    KIP7Token public tradeCurrency;
+    KIP7Token private tradeCurrency;
+    uint256 private lastCookieId;
     uint256 public mintingPriceForKlaytn;
     uint256 public mintingPriceForHammer;
     address payable[] public coFounderAddress;
-    mapping(uint256 => CookieInfo) public cookieInfos;
-    mapping(uint256 => address) public cookieOwners;
-    mapping(address => uint256) public ownedCookiesCount;
+    mapping(uint256 => CookieInfo) private cookieInfos;
     mapping(uint256 => uint256) public cookieHammerPrices;
     mapping(uint256 => bool) public hideCookies;
     mapping(uint256 => bool) public saleCookies;
@@ -34,7 +35,7 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     enum EventStatus{
         CREATE,
         MODIFY,
-        TRANSACTION
+        BUY
     }
 
     // Modifier
@@ -42,7 +43,6 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
         require(ownerOf(cookieId) == msg.sender, "NotCookieOwner");
         _;
     }
-
 
     // Event
     event CookieEvented(uint8 eventStatus, uint256 indexed cookieId, address indexed from, uint256 hammerPrice, uint256 indexed createdAt);
@@ -73,8 +73,9 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     }
 
     // 쿠키의 해머가격 변경
-    function changeHammerPrice(uint256 cookieId, uint256 price) onlyCookieOwner(cookieId) public {
-        cookieHammerPrices[cookieId] = price;
+    function changeHammerPrice(uint256 _cookieId, uint256 _hammerPrice) onlyCookieOwner(_cookieId) public {
+        cookieHammerPrices[_cookieId] = _hammerPrice;
+        emit CookieEvented(uint8(EventStatus.MODIFY), _cookieId, msg.sender, _hammerPrice, now);
     }
     // 쿠키 숨기기
     function hideCookie(uint256 cookieId, bool isHide) onlyCookieOwner(cookieId) public {
@@ -88,8 +89,8 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
 
     // 쿠키 삭제
     function burnCookie(uint256 cookieId) onlyCookieOwner(cookieId) public {
+        removeCookieInfo(cookieId);
         _burn(msg.sender, cookieId);
-        // TODO: CookieFactory 컨트랙 내에 정보 삭제까지 포함
     }
 
     // 인출
@@ -107,27 +108,25 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     // 쿠키 발행 (hammer)
     function mintCookieByHammer(string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) public returns (uint256) {
         require(tradeCurrency.balanceOf(msg.sender) >= mintingPriceForHammer, "Not Enough HammerCoin");
-        tradeCurrency.transferFrom(msg.sender, address(this), mintingPriceForHammer);
-        uint256 cookieId = _mintCookie(_title, _content, _imageUrl, _tag, _hammerPrice);
+        if (mintingPriceForHammer > 0) {
+            tradeCurrency.transferFrom(msg.sender, address(this), mintingPriceForHammer);
+        }
+
+        uint256 cookieId = createCookie(_title, _content, _imageUrl, _tag, _hammerPrice);
         return cookieId;
     }
 
     // 쿠키 발행 (klaytn)
     function mintCookieByKlaytn(string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) public payable returns (uint256) {
         require(msg.value >= mintingPriceForKlaytn, "Not Enough Klaytn");
-        uint256 cookieId = _mintCookie(_title, _content, _imageUrl, _tag, _hammerPrice);
+        uint256 cookieId = createCookie(_title, _content, _imageUrl, _tag, _hammerPrice);
         return cookieId;
     }
 
-    function mint(address to, uint256 cookieId) internal {
-        super._mint(to, cookieId);
-        cookieOwners[cookieId] = to;
-        ownedCookiesCount[to]++;
-    }
+    function createCookie(string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) internal returns (uint256) {
+        uint256 _cookieId = getNewCookieId();
+        super._mint(msg.sender, _cookieId);
 
-    function _mintCookie(string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) internal returns (uint256) {
-        uint256 _cookieId = totalSupply() + 1;
-        mint(msg.sender, _cookieId);
         CookieInfo memory newCookie = CookieInfo(_cookieId, _title, _content, _imageUrl, _tag, msg.sender, now);
         cookieInfos[_cookieId] = newCookie;
         cookieHammerPrices[_cookieId] = _hammerPrice;
@@ -146,27 +145,40 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
         return SafeMath.div(100, coFounderAddress.length);
     }
 
+    function buyCookie(uint256 _cookieId) public {
+        uint256 _hammerPrice = cookieHammerPrices[_cookieId] * 1000000000000000000;
+        require(tradeCurrency.balanceOf(msg.sender) >= _hammerPrice, "Not Enough Currency");
+        address buyer = msg.sender;
+        address seller = ownerOf(_cookieId);
+
+        // this로 inner method 호출하는 이유는 msg.sender가 해당 컨트랙 주소로 변경되기 때문
+        this.transferFrom(seller, buyer, _cookieId);
+        tradeCurrency.transferFrom(buyer, seller, _hammerPrice);
+        // 다시 해당 컨트랙에 전달
+        approve(address(this), _cookieId);
+
+        emit CookieEvented(uint8(EventStatus.BUY), _cookieId, msg.sender, _hammerPrice, now);
+    }
+
+    // 특정 cookieId 메타데이터 표기
     function tokenURI(uint256 cookieId) public view returns (string memory) {
         require(_exists(cookieId), "KIP17Metadata: URI query for non exist token");
         // TODO: opensea에 resource 표기할때 사용되는 json파일  지금은 dummy (이후에 해당 부분은 Client <-> BE 결과로 생성된 리소스 전달하는방식으로)
     }
 
-    function buyCookie(uint256 cookieId) public {
-        uint256 hammerPrice = cookieHammerPrices[cookieId] * 1000000000000000000;
-        require(tradeCurrency.balanceOf(msg.sender) >= hammerPrice, "Not Enough Currency");
+    function getNewCookieId() internal returns (uint256) {
+        lastCookieId = lastCookieId.add(1);
+        return lastCookieId;
+    }
 
-        address buyer = msg.sender;
-        address seller = ownerOf(cookieId);
+    function removeCookieInfo(uint256 cookieId) onlyCookieOwner(cookieId) internal {
+        delete cookieInfos[cookieId];
+        delete cookieHammerPrices[cookieId];
+        delete hideCookies[cookieId];
+        delete saleCookies[cookieId];
+    }
 
-        // this로 inner method 호출하는 이유는 msg.sender가 해당 컨트랙 주소로 변경되기 때문
-        this.transferFrom(seller, buyer, cookieId);
-        tradeCurrency.transferFrom(buyer, seller, hammerPrice);
-
-        ownedCookiesCount[seller]--;
-        ownedCookiesCount[buyer]++;
-        cookieOwners[cookieId] = buyer;
-
-        // 다시 해당 컨트랙에 전달
-        approve(address(this), cookieId);
+    function getOwnedCookieIds() public view returns (uint256[] memory) {
+        return _tokensOfOwner(msg.sender);
     }
 }
