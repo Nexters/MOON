@@ -85,6 +85,10 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     // 쿠키 판매 등록
     function saleCookie(uint256 cookieId, bool isSale) onlyCookieOwner(cookieId) public {
         saleCookies[cookieId] = isSale;
+
+        if(isSale) {
+            approve(address(this), cookieId);
+        }
     }
 
     // 쿠키 삭제
@@ -123,8 +127,9 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
         return cookieId;
     }
 
-    function mintCookieByOwner(string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) onlyOwner public returns (uint256) {
+    function mintCookieByOwner(address creator, string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) onlyOwner public returns (uint256) {
         uint256 cookieId = createCookie(_title, _content, _imageUrl, _tag, _hammerPrice);
+        safeTransferFrom(msg.sender, creator, cookieId);
         return cookieId;
     }
 
