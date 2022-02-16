@@ -379,7 +379,11 @@ function buyCookie(uint256 cookieId)
 
 <br>
 
+### [TRANSACTION] maxApprove
+> uint256.MAX_VALUE 
+Cookie Contract에 쿠키 거래 총량 제어 승인
 
+<br>
 
 ### [TRANSACTION] Approve
 
