@@ -45,7 +45,7 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     }
 
     // Event
-    event CookieEvented(uint8 eventStatus, uint256 indexed cookieId, address indexed from, uint256 hammerPrice, uint256 indexed createdAt);
+    event CookieEvented(uint8 indexed eventStatus, uint256 indexed cookieId, address indexed from, uint256 hammerPrice, uint256 createdAt);
 
     // Function
     // NFT 거래에 사용할 KIP7 토큰 등록
