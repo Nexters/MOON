@@ -20,6 +20,9 @@ module.exports = {
       gasPrice: null,
     }
   },
+  plugins: [
+    'truffle-contract-size'
+  ],
   // Set default mocha options here, use special reporters etc.
   mocha: {
     // timeout: 100000
