@@ -13,8 +13,8 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     // Data & Type
     KIP7Token private tradeCurrency;
     uint256 private lastCookieId;
-    uint256 public mintingPriceForKlaytn;
-    uint256 public mintingPriceForHammer;
+    uint8 public mintingPriceForKlaytn;
+    uint8 public mintingPriceForHammer;
     address payable[] public coFounderAddress;
     mapping(uint256 => CookieInfo) private cookieInfos;
     mapping(uint256 => uint256) public cookieHammerPrices;
@@ -88,7 +88,7 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
         uint256 decimaledHammerPrice = mintingPriceForHammer * 1000000000000000000;
         require(tradeCurrency.balanceOf(msg.sender) >= decimaledHammerPrice, "Not Enough HammerCoin");
         if (mintingPriceForHammer > 0) {
-            tradeCurrency.transferFrom(msg.sender, address(this), mintingPriceForHammer);
+            tradeCurrency.transferFrom(msg.sender, address(this), decimaledHammerPrice);
         }
         uint256 cookieId = createCookie(_title, _content, _metaUrl, _tag, _hammerPrice);
         return cookieId;
