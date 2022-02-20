@@ -49,10 +49,12 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     function addCoFounder(address payable cofounder) onlyOwner public {
         coFounderAddress.push(cofounder);
     }
-    function setMintingPriceForKlaytn(uint256 _mintingPriceForKlaytn) onlyOwner external {
+    // 쿠키 발행에 필요한 klaytn 가격 등록
+    function setMintingPriceForKlaytn(uint8 _mintingPriceForKlaytn) onlyOwner external {
         mintingPriceForKlaytn = _mintingPriceForKlaytn;
     }
-    function setMintingPriceForHammer(uint256 _mintingPriceForHammer) onlyOwner external {
+    // 쿠키 발행에 필요한 Hammer 가격 등록
+    function setMintingPriceForHammer(uint8 _mintingPriceForHammer) onlyOwner external {
         mintingPriceForHammer = _mintingPriceForHammer;
     }
     function mintCookieByOwner(address creator, string memory _title, string memory _content, string memory _metaUrl, string memory _tag, uint256 _hammerPrice) onlyOwner public returns (uint256) {
