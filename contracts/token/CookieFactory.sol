@@ -22,7 +22,6 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     mapping(uint256 => bool) public hideCookies;
     mapping(uint256 => bool) public saleCookies;
 
-
     struct CookieInfo {
         uint256 cookieId;
         string title;
@@ -99,8 +98,7 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     // 쿠키 판매 등록
     function saleCookie(uint256 cookieId, bool isSale) onlyCookieOwner(cookieId) public {
         saleCookies[cookieId] = isSale;
-
-        if(isSale) {
+        if (isSale) {
             approve(address(this), cookieId);
         }
     }
@@ -113,14 +111,23 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
 
     // 인출
     function withdraw() onlyOwner public {
-        // TODO: 분배 로직 추가 필요
-        coFounderAddress[0].transfer(address(this).balance);
+        uint256 percentage = getSharePercentage();
+        uint256 balanceForPercentage = SafeMath.div(address(this).balance, 100);
+        uint256 quota = SafeMath.mul(balanceForPercentage, percentage);
+
+        for (uint i = 0; i < coFounderAddress.length; i++) {
+            coFounderAddress[i].transfer(quota);
+        }
     }
 
     function withdrawHammer() onlyOwner public {
-        // TODO: 분배 로직 추가 필요
-        uint256 totalHammerAmount = tradeCurrency.balanceOf(address(this));
-        tradeCurrency.safeTransfer(coFounderAddress[0], totalHammerAmount);
+        uint256 percentage = getSharePercentage();
+        uint256 hammerBalanceForPercentage = SafeMath.div(tradeCurrency.balanceOf(address(this)), 100);
+        uint256 quota = SafeMath.mul(hammerBalanceForPercentage, percentage);
+
+        for (uint i = 0; i < coFounderAddress.length; i++) {
+            tradeCurrency.safeTransfer(coFounderAddress[i], quota);
+        }
     }
 
     // 쿠키 발행 (hammer)
