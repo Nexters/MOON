@@ -10,7 +10,25 @@
 - TRANSACTION : 블록체인 데이터 변경 함수 => 지갑 서명 필요 및 수수료 부과됨
 
 
+<br>
 
+### [CALL] 쿠키 기본 정보 조회 (cookieId 소유자만 호출 가능)
+
+```solidity
+function getCookieInfo(uint256 cookieId)
+```
+
+**Params**
+
+- uint256 cookieId : 쿠키 고유 id
+
+**Response**
+
+- string title : 쿠키 타이틀
+- string metaUrl : 쿠키 메타정보(image, description 등..)를 담고있는 url
+- string tag : 쿠키 태그
+- address creator : 생성자 지갑 주소
+- createdAt : 생성 시간(unix timestamp)
 <br>
 
 
@@ -25,6 +43,10 @@ function getContent(uint256 cookieId)
 **Params**
 
 - uint256 cookieId : 쿠키 고유 id
+
+**Response**
+
+- string content : 쿠키에 기록된 컨텐츠 
 
 
 
