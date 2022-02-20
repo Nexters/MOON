@@ -22,6 +22,7 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     mapping(uint256 => bool) public hideCookies;
     mapping(uint256 => bool) public saleCookies;
 
+
     struct CookieInfo {
         uint256 cookieId;
         string title;
@@ -48,6 +49,16 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     event CookieEvented(uint8 indexed eventStatus, uint256 indexed cookieId, address indexed from, uint256 hammerPrice, uint256 createdAt);
 
     // Function
+
+    // 컨트랙에 예치된 클레이튼 조회
+    function getKlaytnBalacne() onlyOwner public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    function getHammerBalance() onlyOwner public view returns (uint256) {
+        return tradeCurrency.balanceOf(address(this));
+    }
+
     // NFT 거래에 사용할 KIP7 토큰 등록
     function setTradeCurrency(KIP7Token _tradeCurrency) onlyOwner external {
         tradeCurrency = _tradeCurrency;
@@ -114,7 +125,8 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
 
     // 쿠키 발행 (hammer)
     function mintCookieByHammer(string memory _title, string memory _content, string memory _metaUrl, string memory _tag, uint256 _hammerPrice) public returns (uint256) {
-        require(tradeCurrency.balanceOf(msg.sender) >= mintingPriceForHammer, "Not Enough HammerCoin");
+        uint256 decimaledHammerPrice = mintingPriceForHammer * 1000000000000000000;
+        require(tradeCurrency.balanceOf(msg.sender) >= decimaledHammerPrice, "Not Enough HammerCoin");
         if (mintingPriceForHammer > 0) {
             tradeCurrency.transferFrom(msg.sender, address(this), mintingPriceForHammer);
         }
@@ -125,7 +137,8 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
 
     // 쿠키 발행 (klaytn)
     function mintCookieByKlaytn(string memory _title, string memory _content, string memory _metaUrl, string memory _tag, uint256 _hammerPrice) public payable returns (uint256) {
-        require(msg.value >= mintingPriceForKlaytn, "Not Enough Klaytn");
+        uint256 decimaledKlaytnPrice = mintingPriceForKlaytn * 1000000000000000000;
+        require(msg.value >= decimaledKlaytnPrice, "Not Enough Klaytn");
         uint256 cookieId = createCookie(_title, _content, _metaUrl, _tag, _hammerPrice);
         return cookieId;
     }

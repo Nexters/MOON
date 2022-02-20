@@ -12,7 +12,6 @@ contract HammerCoin is KIP7Token, Ownable {
     address private cookieContractAddress;
 
     constructor(string memory name, string memory symbol, uint8 decimals, uint256 initialSupply) KIP7Token(name, symbol, decimals, initialSupply) public {
-        _mint(msg.sender, initialSupply);
     }
 
     mapping(address => bool) public maxApprovedAddress;
