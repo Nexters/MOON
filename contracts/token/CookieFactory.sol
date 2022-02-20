@@ -24,9 +24,9 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
 
     struct CookieInfo {
         uint256 cookieId;
+        string title;
         string content;
-        string text;
-        string imageUrl;
+        string metaUrl;
         string tag;
         address creator;
         uint256 createdAt;
@@ -72,6 +72,9 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
         return cookieInfos[cookieId].content;
     }
 
+    function getCookieInfo(uint256 cookieId) public view returns (string memory title, string memory metaUrl, string memory tag, address creator, uint256 createdAt) {
+        return (cookieInfos[cookieId].title, cookieInfos[cookieId].metaUrl, cookieInfos[cookieId].tag, cookieInfos[cookieId].creator, cookieInfos[cookieId].createdAt);
+    }
     // 쿠키의 해머가격 변경
     function changeHammerPrice(uint256 _cookieId, uint256 _hammerPrice) onlyCookieOwner(_cookieId) public {
         cookieHammerPrices[_cookieId] = _hammerPrice;
@@ -110,34 +113,34 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     }
 
     // 쿠키 발행 (hammer)
-    function mintCookieByHammer(string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) public returns (uint256) {
+    function mintCookieByHammer(string memory _title, string memory _content, string memory _metaUrl, string memory _tag, uint256 _hammerPrice) public returns (uint256) {
         require(tradeCurrency.balanceOf(msg.sender) >= mintingPriceForHammer, "Not Enough HammerCoin");
         if (mintingPriceForHammer > 0) {
             tradeCurrency.transferFrom(msg.sender, address(this), mintingPriceForHammer);
         }
 
-        uint256 cookieId = createCookie(_title, _content, _imageUrl, _tag, _hammerPrice);
+        uint256 cookieId = createCookie(_title, _content, _metaUrl, _tag, _hammerPrice);
         return cookieId;
     }
 
     // 쿠키 발행 (klaytn)
-    function mintCookieByKlaytn(string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) public payable returns (uint256) {
+    function mintCookieByKlaytn(string memory _title, string memory _content, string memory _metaUrl, string memory _tag, uint256 _hammerPrice) public payable returns (uint256) {
         require(msg.value >= mintingPriceForKlaytn, "Not Enough Klaytn");
-        uint256 cookieId = createCookie(_title, _content, _imageUrl, _tag, _hammerPrice);
+        uint256 cookieId = createCookie(_title, _content, _metaUrl, _tag, _hammerPrice);
         return cookieId;
     }
 
-    function mintCookieByOwner(address creator, string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) onlyOwner public returns (uint256) {
-        uint256 cookieId = createCookie(_title, _content, _imageUrl, _tag, _hammerPrice);
+    function mintCookieByOwner(address creator, string memory _title, string memory _content, string memory _metaUrl, string memory _tag, uint256 _hammerPrice) onlyOwner public returns (uint256) {
+        uint256 cookieId = createCookie(_title, _content, _metaUrl, _tag, _hammerPrice);
         safeTransferFrom(msg.sender, creator, cookieId);
         return cookieId;
     }
 
-    function createCookie(string memory _title, string memory _content, string memory _imageUrl, string memory _tag, uint256 _hammerPrice) internal returns (uint256) {
+    function createCookie(string memory _title, string memory _content, string memory _metaUrl, string memory _tag, uint256 _hammerPrice) internal returns (uint256) {
         uint256 _cookieId = getNewCookieId();
         super._mint(msg.sender, _cookieId);
 
-        CookieInfo memory newCookie = CookieInfo(_cookieId, _title, _content, _imageUrl, _tag, msg.sender, now);
+        CookieInfo memory newCookie = CookieInfo(_cookieId, _title, _content, _metaUrl, _tag, msg.sender, now);
         cookieInfos[_cookieId] = newCookie;
         cookieHammerPrices[_cookieId] = _hammerPrice;
 
@@ -174,7 +177,7 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     // 특정 cookieId 메타데이터 표기
     function tokenURI(uint256 cookieId) public view returns (string memory) {
         require(_exists(cookieId), "KIP17Metadata: URI query for non exist token");
-        // TODO: opensea에 resource 표기할때 사용되는 json파일  지금은 dummy (이후에 해당 부분은 Client <-> BE 결과로 생성된 리소스 전달하는방식으로)
+        return cookieInfos[cookieId].metaUrl;
     }
 
     function getNewCookieId() internal returns (uint256) {
