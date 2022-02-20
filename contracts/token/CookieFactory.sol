@@ -11,6 +11,7 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
     using SafeMath for uint256;
 
     // Data & Type
+    uint8 private royalty = 10;
     KIP7Token private tradeCurrency;
     uint256 private lastCookieId;
     uint8 public mintingPriceForKlaytn;
@@ -105,12 +106,19 @@ contract CookieFactory is KIP17Full("CookiePang", "CKP"), Ownable {
         require(saleCookies[_cookieId], "Cookie Not On Sale");
         uint256 hammerPrice = cookieHammerPrices[_cookieId];
         uint256 decimaledHammerPrice = hammerPrice * 1000000000000000000;
+        uint256 hundred = 100;
         require(tradeCurrency.balanceOf(msg.sender) >= decimaledHammerPrice, "Not Enough Currency");
+
+        uint256 amountPerPercent = decimaledHammerPrice.div(100);
+        uint256 tradeAmount = amountPerPercent.mul((hundred).sub(royalty));
+        uint256 royaltyAmount = amountPerPercent.mul(royalty);
+
         address buyer = msg.sender;
         address seller = ownerOf(_cookieId);
         this.transferFrom(seller, buyer, _cookieId);
 
-        tradeCurrency.safeTransferFrom(buyer, seller, decimaledHammerPrice);
+        tradeCurrency.safeTransferFrom(buyer, seller, tradeAmount);
+        tradeCurrency.safeTransferFrom(buyer, address(this), royaltyAmount);
         // 다시 해당 컨트랙에 전달
         approve(address(this), _cookieId);
 
